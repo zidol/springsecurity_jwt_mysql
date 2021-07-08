@@ -13,4 +13,5 @@ public class VerifyResult {
 
     private boolean success;
     private String username;
+    private Exception exception;
 }

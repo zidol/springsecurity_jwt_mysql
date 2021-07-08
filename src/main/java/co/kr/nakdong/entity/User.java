@@ -41,6 +41,7 @@ public class User implements UserDetails {
 
     private LocalDateTime updated;
 
+    private String refreshToken;
 
     @Override
     public String getUsername() {

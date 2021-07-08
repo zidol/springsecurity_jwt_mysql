@@ -1,11 +1,10 @@
 package co.kr.nakdong.loginTest;
 
 
-import co.kr.nakdong.config.UserLoginForm;
+import co.kr.nakdong.dto.UserLoginDto;
 import co.kr.nakdong.entity.User;
 import co.kr.nakdong.repository.UserRepository;
 import co.kr.nakdong.service.UserService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,24 +44,24 @@ public class JWTRequestTest extends WebIntegrationTest {
     private TokenBox getToken() {
         RestTemplate client = new RestTemplate();
 
-        HttpEntity<UserLoginForm> body = new HttpEntity<>(
-                UserLoginForm.builder().username("admin@test.com").password("1234").build()
+        HttpEntity<UserLoginDto> body = new HttpEntity<>(
+                UserLoginDto.builder().username("admin@test.com").password("1234").build()
         );
 
         System.out.println("body = " + body);
         ResponseEntity<User> resp1 = client.exchange(uri("/login"), HttpMethod.POST, body, User.class);
-        return TokenBox.builder().authToken(resp1.getHeaders().get("auth_token").get(0))
+        return TokenBox.builder().authToken(resp1.getHeaders().get("access_token").get(0))
         .refreshToken(resp1.getHeaders().get("refresh_token").get(0)).build();
     }
 
     private TokenBox refreshToken(String refreshToken) {
         RestTemplate client = new RestTemplate();
 
-        HttpEntity<UserLoginForm> body = new HttpEntity<>(
-                UserLoginForm.builder().refreshToken(refreshToken).build()
+        HttpEntity<UserLoginDto> body = new HttpEntity<>(
+                UserLoginDto.builder().refreshToken(refreshToken).build()
         );
         ResponseEntity<User> resp1 = client.exchange(uri("/login"), HttpMethod.POST, body, User.class);
-        return TokenBox.builder().authToken(resp1.getHeaders().get("auth_token").get(0))
+        return TokenBox.builder().authToken(resp1.getHeaders().get("access_token").get(0))
                 .refreshToken(resp1.getHeaders().get("refresh_token").get(0)).build();
     }
     @DisplayName("1. hello 메시지를 받아온다.")

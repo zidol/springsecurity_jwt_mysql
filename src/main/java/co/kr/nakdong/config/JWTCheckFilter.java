@@ -30,6 +30,7 @@ public class JWTCheckFilter extends GenericFilterBean {
     //토큰에 대한 검사
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        System.out.println("jwt check filter");
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String bearer = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
         if(bearer == null || !bearer.startsWith("Bearer ")){
