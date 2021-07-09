@@ -1,10 +1,14 @@
 package co.kr.nakdong.entity;
 
+import co.kr.nakdong.entity.board.Board;
+import co.kr.nakdong.entity.common.BaseEntity;
 import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -14,7 +18,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name="spp_user")
-public class User implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,12 +40,15 @@ public class User implements UserDetails {
 
     private boolean enabled;
 
-    @Column(updatable = false)
-    private LocalDateTime created;
-
-    private LocalDateTime updated;
+//    @Column(updatable = false)
+//    private LocalDateTime created;
+//
+//    private LocalDateTime updated;
 
     private String refreshToken;
+
+    @OneToMany(mappedBy = "user")
+    private List<Board> boards = new ArrayList<>();
 
     @Override
     public String getUsername() {

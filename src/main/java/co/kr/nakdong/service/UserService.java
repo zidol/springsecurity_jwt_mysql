@@ -79,8 +79,12 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
-    public void updateRefreshToken(String usenrname, String refreshToken) {
-        userRepository.findByEmail(usenrname).ifPresent(user -> user.setRefreshToken(refreshToken));
+    public void updateRefreshToken(Long id, String refreshToken) {
+        userRepository.findById(id).ifPresent(user -> {
+            user.setRefreshToken(refreshToken);
+            user.setUpdatedDate(LocalDateTime.now());
+            user.setUpdatedBy(user.getEmail());
+        });
     }
 
 }

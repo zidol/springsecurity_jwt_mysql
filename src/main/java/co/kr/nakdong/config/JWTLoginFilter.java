@@ -1,5 +1,6 @@
 package co.kr.nakdong.config;
 
+import co.kr.nakdong.dto.UserDto;
 import co.kr.nakdong.dto.UserLoginDto;
 import co.kr.nakdong.entity.User;
 import co.kr.nakdong.service.UserService;
@@ -20,6 +21,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -67,14 +69,8 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
                         user, user.getAuthorities()
                 );
             } else {
-//                logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
-                if (verify.getException() instanceof TokenExpiredException) {
-                    throw new TokenExpiredException("토큰 기간이 만료 되었습니다.");
-                } else if (verify.getException() instanceof InvalidClassException) {
-                    throw new InvalidClassException("유효한 claim값이 아닙니다.");
-                } else {
-                    throw new JWTVerificationException("인증이 받지 못한 토큰입니다.");
-                }
+                logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+                throw new JWTVerificationException("토큰이 잘못되었습니다.");
             }
         }
     }
@@ -87,15 +83,38 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
             Authentication authResult) throws IOException, ServletException
     {
         User user = (User) authResult.getPrincipal();
+        //인증 성공시 access 토큰, refresh 토큰 재발급
         String accessToken = JWTUtil.makeAuthToken(user);
         String refreshToken = JWTUtil.makeRefreshToken(user);
-        response.setHeader("access_token", accessToken);
+//        response.setHeader("access_token", accessToken);
 //        response.setHeader("refresh_token", refreshToken);
-        userService.updateRefreshToken(user.getUsername(), refreshToken);
+        
+        //재발급 받은 refresh 토큰 DB에 저장
+        userService.updateRefreshToken(user.getUserId(), refreshToken);
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        Cookie cookie = new Cookie("refreshToken",refreshToken);
+
+        // expires in 7 days
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+
+        // optional properties
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        // add cookie to response
+        response.addCookie(cookie);
+
+        UserDto userDto = UserDto.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .authorities(user.getAuthorities())
+                .build();
+
+        //access token
         Map<String, Object> map = new HashMap<>();
-        map.put("user", user);
         map.put("token", accessToken);
+        map.put("user", userDto);
         response.getOutputStream().write(objectMapper.writeValueAsBytes(map));
     }
 

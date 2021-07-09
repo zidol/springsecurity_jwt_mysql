@@ -3,6 +3,8 @@ package co.kr.nakdong.config;
 import co.kr.nakdong.entity.User;
 import co.kr.nakdong.service.UserService;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +22,7 @@ import java.io.IOException;
 
 public class JWTCheckFilter extends GenericFilterBean {
 
+    private static final Logger logger = LoggerFactory.getLogger(JWTCheckFilter.class);
     private UserService userService;
 
     public JWTCheckFilter(UserService userService) {
@@ -30,9 +33,11 @@ public class JWTCheckFilter extends GenericFilterBean {
     //토큰에 대한 검사
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        System.out.println("jwt check filter");
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+
         String bearer = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        String requestURI = httpServletRequest.getRequestURI();
         if(bearer == null || !bearer.startsWith("Bearer ")){
             chain.doFilter(request, response);
             return;
@@ -47,7 +52,11 @@ public class JWTCheckFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(userToken);
             chain.doFilter(request, response);
         }else{
-            throw new TokenExpiredException("Token is not valid");
+            if (result.getException() instanceof TokenExpiredException) {
+                httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token.");
+            } else {
+                httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid token.");
+            }
         }
     }
 }
