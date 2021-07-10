@@ -1,11 +1,8 @@
 package co.kr.nakdong.config;
 
-import co.kr.nakdong.dto.UserDto;
+
 import co.kr.nakdong.dto.UserLoginDto;
-import co.kr.nakdong.entity.User;
-import co.kr.nakdong.service.UserService;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -25,7 +22,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -116,6 +112,20 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
         map.put("token", accessToken);
         map.put("user", userDto);
         response.getOutputStream().write(objectMapper.writeValueAsBytes(map));
+
+
+        // create a cookie
+        Cookie cookie = new Cookie("refresh_token",refreshToken);
+
+        // expires in 7 days
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+
+        // optional properties
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        // add cookie to response
+        response.addCookie(cookie);
     }
 
     @Override
