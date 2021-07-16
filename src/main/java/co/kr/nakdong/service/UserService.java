@@ -1,12 +1,9 @@
 package co.kr.nakdong.service;
 
-import co.kr.nakdong.entity.Authority;
-import co.kr.nakdong.entity.User;
+import co.kr.nakdong.entity.author.Authority;
+import co.kr.nakdong.entity.author.User;
 import co.kr.nakdong.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,12 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
@@ -79,12 +72,12 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
-    public void updateRefreshToken(Long id, String refreshToken) {
-        userRepository.findById(id).ifPresent(user -> {
-            user.setRefreshToken(refreshToken);
-            user.setUpdatedDate(LocalDateTime.now());
-            user.setUpdatedBy(user.getEmail());
-        });
-    }
+//    public void updateRefreshToken(Long id, String refreshToken) {
+//        userRepository.findById(id).ifPresent(user -> {
+//            user.setRefreshToken(refreshToken);
+//            user.setUpdatedDate(LocalDateTime.now());
+//            user.setUpdatedBy(user.getEmail());
+//        });
+//    }
 
 }

@@ -1,6 +1,6 @@
 package co.kr.nakdong.dto;
 
-import co.kr.nakdong.entity.Authority;
+import co.kr.nakdong.entity.author.Authority;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 

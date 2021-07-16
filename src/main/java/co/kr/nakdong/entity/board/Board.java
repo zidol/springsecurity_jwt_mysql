@@ -1,6 +1,6 @@
 package co.kr.nakdong.entity.board;
 
-import co.kr.nakdong.entity.User;
+import co.kr.nakdong.entity.author.User;
 import co.kr.nakdong.entity.common.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.lang.reflect.Member;
 
 @Getter
 @Setter

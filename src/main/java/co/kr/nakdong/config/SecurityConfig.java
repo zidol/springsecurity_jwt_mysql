@@ -1,9 +1,9 @@
 package co.kr.nakdong.config;
 
+import co.kr.nakdong.entity.author.RefreshToken;
+import co.kr.nakdong.service.RefreshTokenService;
 import co.kr.nakdong.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -12,9 +12,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -39,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CorsFilter corsFilter;
     private final UserService userService;
+    private final RefreshTokenService refreshTokenService;
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -61,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        JWTLoginFilter loginFilter = new JWTLoginFilter(authenticationManagerBean(), userService);
+        JWTLoginFilter loginFilter = new JWTLoginFilter(authenticationManagerBean(), userService, refreshTokenService);
         JWTCheckFilter checkFilter = new JWTCheckFilter(userService);
 
         http

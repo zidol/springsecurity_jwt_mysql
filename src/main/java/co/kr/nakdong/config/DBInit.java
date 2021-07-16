@@ -1,7 +1,7 @@
 package co.kr.nakdong.config;
 
-import co.kr.nakdong.entity.Authority;
-import co.kr.nakdong.entity.User;
+import co.kr.nakdong.entity.author.Authority;
+import co.kr.nakdong.entity.author.User;
 import co.kr.nakdong.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -36,9 +36,21 @@ public class DBInit implements CommandLineRunner {
         authorities.add(authority);
         authorities.add(authority1);
         admin.setAuthorities(authorities);
-
-
         userService.save(admin);
+
+        User user1 = User.builder()
+                .name("user1")
+                .email("user1@test.com")
+                .password(passwordEncoder.encode("1234"))
+                .enabled(true)
+                .build();
+        user1 = userService.save(user1);
+
+        Authority user1authority1 = new Authority(user1.getUserId(), Authority.ROLE_USER);
+        Set<Authority> authorities2 = new HashSet<>();
+        authorities2.add(user1authority1);
+        user1.setAuthorities(authorities2);
+        userService.save(user1);
 
     }
 

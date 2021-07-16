@@ -1,4 +1,4 @@
-package co.kr.nakdong.entity;
+package co.kr.nakdong.entity.author;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

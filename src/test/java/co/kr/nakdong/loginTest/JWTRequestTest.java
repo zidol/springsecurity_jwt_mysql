@@ -2,7 +2,7 @@ package co.kr.nakdong.loginTest;
 
 
 import co.kr.nakdong.dto.UserLoginDto;
-import co.kr.nakdong.entity.User;
+import co.kr.nakdong.entity.author.User;
 import co.kr.nakdong.repository.UserRepository;
 import co.kr.nakdong.service.UserService;
 import org.junit.jupiter.api.DisplayName;

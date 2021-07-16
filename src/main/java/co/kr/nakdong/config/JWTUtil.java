@@ -1,13 +1,12 @@
 package co.kr.nakdong.config;
 
-import co.kr.nakdong.entity.User;
+import co.kr.nakdong.entity.author.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.auth0.jwt.impl.JWTParser;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -18,8 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Date;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,15 +26,24 @@ public class JWTUtil {
     private static final Logger logger = LoggerFactory.getLogger(JWTUtil.class);
 
     public static String SECRET;
-
     @Value("${jwt.secret}")
     public void setSECRET(String value) {
         SECRET = value;
     }
 
-    //    private static final Algorithm ALGORITHM = Algorithm.HMAC512(secret);
-    private static final long AUTH_TIME = 60; //1시간
-    private static final long REFRESH_TIME = 60 * 60 * 24 * 7;//일주일
+    private static long AUTH_TIME; //1시간
+
+    @Value("${jwt.authTime}")
+    public void setAuthTime(long value) {
+        AUTH_TIME = value;
+    }
+
+    private static long REFRESH_TIME;//일주일
+
+    @Value("${jwt.refreshTime}")
+    public void setRefreshTime(long value) {
+        REFRESH_TIME = value;
+    }
 
     private static final Instant now = Instant.now();
 
@@ -60,6 +66,7 @@ public class JWTUtil {
         String authorities = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
+        System.out.println("REFRESH_TIME : " + REFRESH_TIME);
         return JWT.create().withSubject(user.getUsername())
                 .withClaim("exp", Instant.now().getEpochSecond() + REFRESH_TIME)
                 .withIssuedAt(Date.from(now))
@@ -69,7 +76,7 @@ public class JWTUtil {
 
     public static VerifyResult verify(String token) {
         try {
-            DecodedJWT verify = JWT.require(algorithm(SECRET)).build().verify(token);
+            DecodedJWT verify = getDecodedJWT(token);
             return VerifyResult.builder().success(true)
                     .username(verify.getSubject()).build();
         } catch (TokenExpiredException e) {
@@ -94,5 +101,10 @@ public class JWTUtil {
                     .username(decode.getSubject()).exception(e).build();
         }
 
+    }
+
+    private static DecodedJWT getDecodedJWT(String token) {
+        DecodedJWT verify = JWT.require(algorithm(SECRET)).build().verify(token);
+        return verify;
     }
 }

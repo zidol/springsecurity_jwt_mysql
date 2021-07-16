@@ -1,4 +1,4 @@
-package co.kr.nakdong.entity;
+package co.kr.nakdong.entity.author;
 
 import co.kr.nakdong.entity.board.Board;
 import co.kr.nakdong.entity.common.BaseEntity;
@@ -6,7 +6,6 @@ import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -45,7 +44,7 @@ public class User extends BaseEntity implements UserDetails {
 //
 //    private LocalDateTime updated;
 
-    private String refreshToken;
+//    private String refreshToken;
 
     @OneToMany(mappedBy = "user")
     private List<Board> boards = new ArrayList<>();

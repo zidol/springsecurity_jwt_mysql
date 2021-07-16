@@ -1,7 +1,12 @@
 package co.kr.nakdong.config;
 
 
+import co.kr.nakdong.dto.UserDto;
 import co.kr.nakdong.dto.UserLoginDto;
+import co.kr.nakdong.entity.author.RefreshToken;
+import co.kr.nakdong.entity.author.User;
+import co.kr.nakdong.service.RefreshTokenService;
+import co.kr.nakdong.service.UserService;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -32,15 +37,17 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
+    private final RefreshTokenService refreshTokenService;
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public JWTLoginFilter(AuthenticationManager authenticationManager, UserService userService) {
+    public JWTLoginFilter(AuthenticationManager authenticationManager, UserService userService, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
+        this.refreshTokenService = refreshTokenService;
 
 //        setFilterProcessesUrl("/login");//로그인 url설정
         this.setAuthenticationSuccessHandler(new LoginSuccessHandler());
-        this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/login","POST"));
+        this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/api/login","POST"));
     }
 
     @SneakyThrows
@@ -86,7 +93,7 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
 //        response.setHeader("refresh_token", refreshToken);
         
         //재발급 받은 refresh 토큰 DB에 저장
-        userService.updateRefreshToken(user.getUserId(), refreshToken);
+        refreshTokenService.createRefreshToken(user.getUserId(), refreshToken);
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         Cookie cookie = new Cookie("refreshToken",refreshToken);
 
@@ -112,20 +119,6 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
         map.put("token", accessToken);
         map.put("user", userDto);
         response.getOutputStream().write(objectMapper.writeValueAsBytes(map));
-
-
-        // create a cookie
-        Cookie cookie = new Cookie("refresh_token",refreshToken);
-
-        // expires in 7 days
-        cookie.setMaxAge(7 * 24 * 60 * 60);
-
-        // optional properties
-        cookie.setSecure(true);
-        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        // add cookie to response
-        response.addCookie(cookie);
     }
 
     @Override
