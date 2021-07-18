@@ -23,6 +23,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -91,7 +92,7 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
         String refreshToken = JWTUtil.makeRefreshToken(user);
 //        response.setHeader("access_token", accessToken);
 //        response.setHeader("refresh_token", refreshToken);
-        
+
         //재발급 받은 refresh 토큰 DB에 저장
         refreshTokenService.createRefreshToken(user.getUserId(), refreshToken);
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);

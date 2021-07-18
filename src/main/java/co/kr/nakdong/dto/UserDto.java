@@ -15,19 +15,19 @@ import java.util.Set;
 @NoArgsConstructor
 public class UserDto {
 
-   @NotNull
-   @Size(min = 3, max = 50)
-   private String name;
+    @NotNull
+    @Size(min = 3, max = 50)
+    private String name;
 
-   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-   @NotNull
-   @Size(min = 3, max = 100)
-   private String password;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotNull
+    @Size(min = 3, max = 100)
+    private String password;
 
-   @NotNull
-   @Size(min = 3, max = 50)
-   private String email;
+    @NotNull
+    @Size(min = 3, max = 50)
+    private String email;
 
-   private Set<Authority> authorities;
+    private Set<Authority> authorities;
 
 }
