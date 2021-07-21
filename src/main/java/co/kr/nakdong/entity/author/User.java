@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name="spp_user")
+@ToString
 public class User extends BaseEntity implements UserDetails {
 
     @Id
@@ -30,21 +32,10 @@ public class User extends BaseEntity implements UserDetails {
 
     private String password;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(foreignKey = @ForeignKey(name = "userId"))
-    private Set<Authority> authorities;
-
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    private School school;
+    @OneToMany(mappedBy = "user")
+    private Set<Authority> authorities = new HashSet<>();
 
     private boolean enabled;
-
-//    @Column(updatable = false)
-//    private LocalDateTime created;
-//
-//    private LocalDateTime updated;
-
-//    private String refreshToken;
 
     @OneToMany(mappedBy = "user")
     private List<Board> boards = new ArrayList<>();

@@ -2,10 +2,7 @@ package co.kr.nakdong.entity.board;
 
 import co.kr.nakdong.entity.author.User;
 import co.kr.nakdong.entity.common.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -15,6 +12,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "spp_board")
+@Builder
+@ToString(exclude = "user")
 public class Board extends BaseEntity {
 
     @Id
@@ -26,7 +25,7 @@ public class Board extends BaseEntity {
     private String cotnents;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
     public void setMember(User user) {

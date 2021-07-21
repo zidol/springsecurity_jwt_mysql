@@ -1,39 +1,39 @@
 package co.kr.nakdong.entity.author;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Objects;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "spp_authority")
-@IdClass(Authority.class)
+@ToString(exclude = "user")
 public class Authority implements GrantedAuthority {
 
-    public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String ROLE_USER = "ROLE_USER";
-//    public static final String ROLE_STUDENT = "ROLE_STUDENT";
-
-    public static final Authority ADMIN_AUTHORITY = Authority.builder().authority(ROLE_ADMIN).build();
-    public static final Authority USER_AUTHORITY = Authority.builder().authority(ROLE_USER).build();
-//    public static final Authority STUDENT_AUTHORITY = Authority.builder().authority(ROLE_STUDENT).build();
-
     @Id
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Id
-    private String authority;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userId")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "authority")
+    private Role authority;
+
+
+    @Override
+    public String getAuthority() {
+        return authority.getAuthority().toString();
+    }
+
 
     @Override
     public boolean equals(Object o) {

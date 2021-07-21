@@ -3,6 +3,8 @@ package co.kr.nakdong.loginTest;
 
 import co.kr.nakdong.dto.UserLoginDto;
 import co.kr.nakdong.entity.author.User;
+import co.kr.nakdong.entity.board.Board;
+import co.kr.nakdong.repository.BoardRepository;
 import co.kr.nakdong.repository.UserRepository;
 import co.kr.nakdong.service.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +14,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,6 +29,9 @@ public class JWTRequestTest extends WebIntegrationTest {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private BoardRepository boardRepository;
 
     public JWTRequestTest() {
     }
@@ -101,5 +109,18 @@ public class JWTRequestTest extends WebIntegrationTest {
         ResponseEntity<String> resp3 = client.exchange(uri("/api/greeting"), HttpMethod.GET, body, String.class);
 
         assertEquals("hello", resp3.getBody());
+    }
+
+    @DisplayName("")
+    @Test
+    @Transactional
+    void test() {
+        Optional<User> byEmail = userRepository.findByEmail("admin@test.com");
+
+//        Board board = Board.builder().user(byEmail.get()).cotnents("AAAA").subject("BBBBB").build();
+//        Board save = boardRepository.save(board);
+
+        System.out.println("save = " + byEmail.toString());
+
     }
 }
