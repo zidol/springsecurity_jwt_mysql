@@ -5,6 +5,7 @@ import co.kr.nakdong.entity.author.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -16,7 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("update User set name=?2, updated=?3 where userId=?1")
     void updateUserName(Long userId, String userName, LocalDateTime update);
 
-    Optional<User> findByEmail(String username);
+    @Query("select u from User u join fetch u.authorities where u.email = :username")
+    Optional<User> findByEmail(@Param("username") String username);
 
 /*    @Query("select a from User a, Authority b where a.userId=b.userId and b.authority=?1")
     List<User> findAllByAuthoritiesIn(String authority);

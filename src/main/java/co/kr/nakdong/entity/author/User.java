@@ -2,6 +2,7 @@ package co.kr.nakdong.entity.author;
 
 import co.kr.nakdong.entity.board.Board;
 import co.kr.nakdong.entity.common.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -18,7 +19,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name="spp_user")
-@ToString
+//@ToString
 public class User extends BaseEntity implements UserDetails {
 
     @Id
@@ -33,11 +34,13 @@ public class User extends BaseEntity implements UserDetails {
     private String password;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private Set<Authority> authorities = new HashSet<>();
 
     private boolean enabled;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Board> boards = new ArrayList<>();
 
     @Override
